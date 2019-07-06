@@ -1,2 +1,1 @@
-# APTOS
-# APTOS at Kaggle Competition
+# [APTOS](https://www.kaggle.com/c/aptos2019-blindness-detection) at Kaggle Competition
