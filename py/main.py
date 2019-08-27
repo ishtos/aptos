@@ -59,7 +59,7 @@ config = {
     'model_name': 'efficientnet-b3',
     'pretrained': False,
 #     'weight_path': os.path.join('..', 'input', 'resnet101', 'resnet101.pth'),
-    'weight_path': os.path.join('..', 'input', 'efficientnet-aptos', 'efficientnet-b3.pth'),
+    # 'weight_path': os.path.join('..', 'input', 'efficientnet-aptos', 'efficientnet-b3.pth'),
     
     # loss
     'loss_name': 'MSE',
@@ -458,9 +458,11 @@ class DRModel(nn.Module):
         
         super(DRModel, self).__init__()
         self.model = get_model()
-        self.model.load_state_dict(torch.load(config['weight_path']))
+        # self.model.load_state_dict(torch.load(config['weight_path']))
         if 'efficient' not in config['model_name']:
             self.model.fc = nn.Linear(in_features=self.model.fc.in_features, out_features=config['num_classes'], bias=True)
+        else:
+            self.model._fc = nn.Linear(in_features=self.model._fc.in_features, out_features=config['num_classes'], bias=True)
             
     def forward(self, x):
         
