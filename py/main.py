@@ -99,7 +99,7 @@ config = {
     
     # train settings
     'num_classes': 1,
-    'lr': 0.0001
+    'lr': 0.0001,
     'epochs': 100,
     'image_size': 512,
     'patience': 10,
@@ -146,44 +146,6 @@ def preprocess(image_name):
     image = cv2.addWeighted(image, 4, cv2.GaussianBlur(image, (0, 0), 30), -4, 128)
 
     return image
-
-def get_model():
-    model_name = config['model_name']
-    pretrained = config['pretrained']
-    if model_name == 'resnet18':
-        model = models.resnet18(pretrained=pretrained)
-    elif model_name == 'resnet34':
-        model = models.resnet34(pretrained=pretrained)
-    elif model_name == 'resnet50':
-        model = models.resnet50(pretrained=pretrained)
-    elif model_name == 'resnet101':
-        model = models.resnet101(pretrained=pretrained)
-    elif model_name == 'resnet152':
-        model = models.resnet152(pretrained=pretrained)
-    elif model_name == 'vgg11_bn':
-        model = models.vgg11_bn(pretrained=pretrained)
-    elif model_name == 'vgg13_bn':
-        model = models.vgg13_bn(pretrained=pretrained)
-    elif model_name == 'vgg16_bn':
-        model = models.vgg16_bn(pretrained=pretrained)
-    elif model_name == 'vgg19_bn':
-        model = models.vgg19_bn(pretrained=pretrained)
-    elif model_name == 'inception_v3':
-        model = models.inception_v3(pretrained=pretrain)
-    elif model_name == 'efficientnet-b0':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
-    elif model_name == 'efficientnet-b1':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
-    elif model_name == 'efficientnet-b2':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
-    elif model_name == 'efficientnet-b3':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
-    elif model_name == 'efficient-b4':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
-    elif model_name == 'efficient-b5':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
-
-    return model
 
 def get_optimizer(params): 
     optimizer_name = config['optimizer_name']
