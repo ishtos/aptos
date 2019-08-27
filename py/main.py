@@ -42,6 +42,8 @@ from sklearn.metrics import cohen_kappa_score
 import albumentations as A
 from albumentations import torch as AT
 
+from efficientnet_pytorch import EfficientNet
+
 config = {
     # settings
     'seed': 43,
@@ -196,17 +198,17 @@ def get_model():
     elif model_name == 'inception_v3':
         model = models.inception_v3(pretrained=pretrain)
     elif model_name == 'efficientnet-b0':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
+        model = EfficientNet.from_pretrained(model_name)
     elif model_name == 'efficientnet-b1':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
+        model = EfficientNet.from_pretrained(model_name)
     elif model_name == 'efficientnet-b2':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
+        model = EfficientNet.from_pretrained(model_name)
     elif model_name == 'efficientnet-b3':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
+        model = EfficientNet.from_pretrained(model_name)
     elif model_name == 'efficientnet-b4':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
+        model = EfficientNet.from_pretrained(model_name)
     elif model_name == 'efficientnet-b5':
-        model = EfficientNet.from_pretrained(model_name, num_classes=1)
+        model = EfficientNet.from_pretrained(model_name)
         
     return model
 
