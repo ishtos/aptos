@@ -104,7 +104,7 @@ def main():
 
     learn = Learner(data=old_data, 
                 model=model, 
-                path='./',
+                path='../',
                 model_dir='old_weights',
                 metrics=[qk]).to_fp16()
 
@@ -123,7 +123,7 @@ def main():
 
     learn = Learner(data, 
                 model,   
-                path='./',
+                path='../',
                 model_dir='weights',
                 metrics=[qk]).to_fp16()
 
