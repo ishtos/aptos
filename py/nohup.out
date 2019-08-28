@@ -1,0 +1,22 @@
+  0%|          | 0/35108 [00:00<?, ?it/s]100%|██████████| 35108/35108 [00:00<00:00, 408983.32it/s]
+  0%|          | 0/3662 [00:00<?, ?it/s]100%|██████████| 3662/3662 [00:00<00:00, 477880.01it/s]
+  0%|          | 0/100 [00:00<?, ?it/s]Loaded pretrained weights for efficientnet-b3
+Traceback (most recent call last):
+  File "main.py", line 692, in <module>
+    main()
+  File "main.py", line 662, in main
+    train_loss = train(model, criterion, optimizer, train_loader)
+  File "main.py", line 407, in train
+    for _, (data, target) in enumerate(train_loader):
+  File "/opt/conda/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 631, in __next__
+    idx, batch = self._get_batch()
+  File "/opt/conda/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 601, in _get_batch
+    return self.data_queue.get(timeout=MP_STATUS_CHECK_INTERVAL)
+  File "/opt/conda/lib/python3.6/queue.py", line 173, in get
+    self.not_empty.wait(remaining)
+  File "/opt/conda/lib/python3.6/threading.py", line 299, in wait
+    gotit = waiter.acquire(True, timeout)
+  File "/opt/conda/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 274, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 6567) is killed by signal: Terminated. 
+

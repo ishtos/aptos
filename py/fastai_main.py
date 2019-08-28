@@ -43,6 +43,8 @@ from sklearn.metrics import cohen_kappa_score
 import albumentations as A
 from albumentations import torch as AT
 
+from efficientnet_pytorch import EfficientNet
+
 def get_df():
     base_image_dir = os.path.join('..', 'input', 'aptos2019-blindness-detection')
     train_dir = os.path.join(base_image_dir, 'train_images')

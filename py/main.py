@@ -74,7 +74,7 @@ config = {
         'resize': {'train': False, 'test': False, 'train_size': 224, 'test_size': 224},
         'centerCrop': {'train': False, 'test': False, 'train_size': 224,'test_size': 224},
         'colorJitter': {'train': True, 'test': False, 'brightness': 0.2, 'contrast': 0, 'saturation': 0, 'hue': 0},
-        'randomCrop': {'train': True, 'test': False, 'train_size': 300, 'test_size': 300, 'padding': 4},
+        'randomCrop': {'train': True, 'test': False, 'train_size': 256, 'test_size': 256, 'padding': 4},
         'randomResizedCrop': {'train': False, 'test': False, 'train_size': 224, 'test_size': 224},
         'randomHorizontalFlip': {'train': True, 'test': False, 'p': 0.5},
         'randomAffine': {'train': True, 'test': False, 'degrees': 360, 'translate': None, 'scale': (1, 1.5), 'shear': None},
@@ -103,7 +103,7 @@ config = {
     'num_classes': 1,
     'lr': 0.0001,
     'epochs': 100,
-    'image_size': 512,
+    'image_size': 300,
     'patience': 10,
     'verbose': True,
     'batch_size': 32,
@@ -385,7 +385,7 @@ def get_train_data():
 #     train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], sampler=train_sampler, num_workers=config['num_workers'])
 #     valid_loader = DataLoader(valid_dataset, batch_size=config['batch_size'], sampler=valid_sampler, num_workers=config['num_workers'])
 
-    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], num_workers=config['num_workers'])
+    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], num_workers=1)
     valid_loader = DataLoader(valid_dataset, batch_size=config['batch_size'], num_workers=config['num_workers'])
 
     return train_loader, valid_loader
