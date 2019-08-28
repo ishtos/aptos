@@ -82,8 +82,12 @@ def main():
     df, test_df = get_df()
     old_df = get_old_df()
 
+    print("START LAOD")
+    
     model = EfficientNet.from_pretrained('efficientnet-b3')
     model._fc = nn.Linear(in_features=model._fc.in_features, out_features=1, bias=True)
+
+    print("END LOAD")
 
     model._fc.weight.requires_grad = False
     model._fc.bias.requires_grad = False
@@ -108,7 +112,11 @@ def main():
                 model_dir='old_weights',
                 metrics=[qk]).to_fp16()
 
+    print("START OLD TRAIN")
+
     learn.fit_one_cycle(15, 0.0005)
+
+    print("END OLD TRAIN")
 
     model._fc.weight.requires_grad = True
     model._fc.bias.requires_grad = True
@@ -123,7 +131,7 @@ def main():
 
     learn = Learner(data, 
                 model,   
-                path='../',
+                path='..o/',
                 model_dir='weights',
                 metrics=[qk]).to_fp16()
 
@@ -131,6 +139,12 @@ def main():
                                       os.path.join('..', 'input', 'aptos2019-blindness-detection'),
                                       folder='test_images',
                                       suffix='.png'))
+
+    print("START TRAIN")
+
+    learn.fit_one_cycle(5, 0.0005)
+
+    print("END TRAIN")
 
     coefficients=[0.5, 1.5, 2.5, 3.5]
     opt = OptimizedRounder()
