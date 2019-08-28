@@ -56,14 +56,14 @@ def get_df():
     return df, test_df
 
 def get_old_df():
-    base_image_dir = os.path.join('..', 'input', 'diabetic-retinopathy-resized')
+    base_image_dir = os.path.join('..', 'input', 'diabetic-retinopathy-resized-png')
     train_dir = os.path.join(base_image_dir, 'resized_train_cropped', 'resized_train_cropped')
     df = pd.read_csv(os.path.join(base_image_dir, 'trainLabels_cropped.csv'))
-    df['path'] = df['image'].map(lambda x: os.path.join(train_dir,'{}.jpeg'.format(x)))
+    df['path'] = df['image'].map(lambda x: os.path.join(train_dir,'{}.png'.format(x)))
     df = df.drop(columns=['image'])
     df = df.sample(frac=1).reset_index(drop=True) 
     df = df.rename(columns={'level': 'diagnosis'})
-    df.drop(['Unnamed: 0', 'Unnamed: 0.1'], inplace=True, axis=1)
+    # df.drop(['Unnamed: 0', 'Unnamed: 0.1'], inplace=True, axis=1)
     return df
 
 def qk(y_pred, y):
@@ -91,8 +91,8 @@ def main():
 
     print("END LOAD")
 
-    model._fc.weight.requires_grad = False
-    model._fc.bias.requires_grad = False
+    # model._fc.weight.requires_grad = False
+    # model._fc.bias.requires_grad = False
 
     bs = 32
     size = 300
@@ -104,7 +104,7 @@ def main():
         .split_none()
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
-        .databunch(bs=bs, num_workers=cpu_count()) 
+        .databunch(bs=bs, num_workers=0) 
         .normalize(imagenet_stats)  
        )
 
@@ -112,7 +112,7 @@ def main():
                 model=model, 
                 path='../',
                 model_dir='old_weights',
-                metrics=[qk]).to_fp16()
+                metrics=[qk], callback_fns=[CSVLogger]).to_fp16()
 
     print("START OLD TRAIN")
 
@@ -120,22 +120,23 @@ def main():
 
     print("END OLD TRAIN")
 
-    model._fc.weight.requires_grad = True
-    model._fc.bias.requires_grad = True
+    # model._fc.weight.requires_grad = True
+    # model._fc.bias.requires_grad = True
 
     data = (ImageList.from_df(df=df, path='./', cols='path') 
         .split_by_rand_pct(0.2) 
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
-        .databunch(bs=bs, num_workers=cpu_count()) 
+        .databunch(bs=bs, num_workers=0) 
         .normalize(imagenet_stats)  
        )
 
     learn = Learner(data, 
                 model,   
-                path='..o/',
+                path='../',
                 model_dir='weights',
-                metrics=[qk]).to_fp16()
+                metrics=[qk],
+                callback_fns=CSVLogger).to_fp16()
 
     learn.data.add_test(ImageList.from_df(test_df,
                                       os.path.join('..', 'input', 'aptos2019-blindness-detection'),
@@ -144,6 +145,7 @@ def main():
 
     print("START TRAIN")
 
+    learn.unfreeze()
     learn.fit_one_cycle(5, 0.0005)
 
     print("END TRAIN")
