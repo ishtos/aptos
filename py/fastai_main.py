@@ -112,7 +112,7 @@ def main():
                 model=model, 
                 path='../',
                 model_dir='old_weights',
-                metrics=[qk], callback_fns=[CSVLogger]).to_fp16()
+                metrics=[qk]).to_fp16()
 
     print("START OLD TRAIN")
 
@@ -135,8 +135,7 @@ def main():
                 model,   
                 path='../',
                 model_dir='weights',
-                metrics=[qk],
-                callback_fns=CSVLogger).to_fp16()
+                metrics=[qk]).to_fp16()
 
     learn.data.add_test(ImageList.from_df(test_df,
                                       os.path.join('..', 'input', 'aptos2019-blindness-detection'),
