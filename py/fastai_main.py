@@ -106,7 +106,7 @@ def main():
         .split_none()
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
-        .databunch(bs=bs, num_workers=cpu_count()) 
+        .databunch(bs=bs, num_workers=0) 
         .normalize(imagenet_stats)  
        )
 
@@ -114,8 +114,7 @@ def main():
                 model=model, 
                 path='../',
                 model_dir='weights',
-                metrics=[qk],
-                silent=False).to_fp16()
+                metrics=[qk]).to_fp16()
 
     print("START OLD TRAIN")
 
@@ -128,7 +127,7 @@ def main():
         .split_by_rand_pct(0.2) 
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
-        .databunch(bs=bs, num_workers=cpu_count()) 
+        .databunch(bs=bs, num_workers=0) 
         .normalize(imagenet_stats)  
        )
 
@@ -136,8 +135,7 @@ def main():
                 model,   
                 path='../',
                 model_dir='weights',
-                metrics=[qk],
-                silent=False).to_fp16()
+                metrics=[qk]).to_fp16()
 
     learn.data.add_test(ImageList.from_df(test_df,
                                       os.path.join('..', 'input', 'aptos2019-blindness-detection'),
@@ -146,7 +144,7 @@ def main():
 
     print("START TRAIN")
    
-    leran.unfreeze()
+    learn.unfreeze()
     learn.fit_one_cycle(15, 0.0001)
     learn.save(os.path.join('..', 'weights', 'stage-2-15'))
 
