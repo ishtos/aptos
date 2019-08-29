@@ -75,7 +75,6 @@ def main():
     seed_everything()
 
     df, test_df = get_df()
-    old_df = get_old_df()
 
     print("START LAOD")
     
