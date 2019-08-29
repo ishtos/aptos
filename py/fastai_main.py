@@ -45,6 +45,7 @@ from albumentations import torch as AT
 
 from efficientnet_pytorch import EfficientNet
 
+
 def get_df():
     base_image_dir = os.path.join('..', 'input', 'aptos2019-blindness-detection')
     train_dir = os.path.join(base_image_dir, 'train_images')
@@ -54,6 +55,7 @@ def get_df():
     df = df.sample(frac=1).reset_index(drop=True) 
     test_df = pd.read_csv(os.path.join(base_image_dir, 'sample_submission.csv'))
     return df, test_df
+
 
 def get_old_df():
     base_image_dir = os.path.join('..', 'input', 'diabetic-retinopathy-resized-png')
@@ -66,8 +68,10 @@ def get_old_df():
     # df.drop(['Unnamed: 0', 'Unnamed: 0.1'], inplace=True, axis=1)
     return df
 
+
 def qk(y_pred, y):
     return torch.tensor(cohen_kappa_score(torch.round(y_pred), y, weights='quadratic'), device='cuda:0')
+
 
 def seed_everything():
     seed = 43
@@ -77,6 +81,7 @@ def seed_everything():
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
+
 
 def main():
     seed_everything()
@@ -91,9 +96,6 @@ def main():
 
     print("END LOAD")
 
-    # model._fc.weight.requires_grad = False
-    # model._fc.bias.requires_grad = False
-
     bs = 32
     size = 300
 
@@ -104,30 +106,29 @@ def main():
         .split_none()
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
-        .databunch(bs=bs, num_workers=0) 
+        .databunch(bs=bs, num_workers=cpu_count()) 
         .normalize(imagenet_stats)  
        )
 
     learn = Learner(data=old_data, 
                 model=model, 
                 path='../',
-                model_dir='old_weights',
-                metrics=[qk]).to_fp16()
+                model_dir='weights',
+                metrics=[qk],
+                silent=False).to_fp16()
 
     print("START OLD TRAIN")
 
-    learn.fit_one_cycle(15, 0.0005)
+    learn.fit_one_cycle(5, 0.0005)
+    learn.save(os.path.join('..', 'weights', 'stage-1-5'))
 
     print("END OLD TRAIN")
-
-    # model._fc.weight.requires_grad = True
-    # model._fc.bias.requires_grad = True
 
     data = (ImageList.from_df(df=df, path='./', cols='path') 
         .split_by_rand_pct(0.2) 
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
-        .databunch(bs=bs, num_workers=0) 
+        .databunch(bs=bs, num_workers=cpu_count()) 
         .normalize(imagenet_stats)  
        )
 
@@ -135,7 +136,8 @@ def main():
                 model,   
                 path='../',
                 model_dir='weights',
-                metrics=[qk]).to_fp16()
+                metrics=[qk],
+                silent=False).to_fp16()
 
     learn.data.add_test(ImageList.from_df(test_df,
                                       os.path.join('..', 'input', 'aptos2019-blindness-detection'),
@@ -143,23 +145,13 @@ def main():
                                       suffix='.png'))
 
     print("START TRAIN")
-
-    learn.unfreeze()
-    learn.fit_one_cycle(5, 0.0005)
+   
+    leran.unfreeze()
+    learn.fit_one_cycle(15, 0.0001)
+    learn.save(os.path.join('..', 'weights', 'stage-2-15'))
 
     print("END TRAIN")
 
-    coefficients=[0.5, 1.5, 2.5, 3.5]
-    opt = OptimizedRounder()
-    preds,y = learn.get_preds(ds_type=DatasetType.Test)
-    all_preds = list(learn.tta_only(ds_type=DatasetType.Test, activ=None, scale=1.35))
-    avg_preds = torch.stack(all_preds)
-    avg_preds = avg_preds.detach().cpu().numpy()
-    avg_preds = np.mean(avg_preds, 0)
-    preds = preds.detach().cpu().numpy()*0.4 + avg_preds*(1-0.4)
-    test_pred = opt.predict(preds, coefficients)
-    test_df['diagnosis'] = test_pred.astype(int)
-    test_df.to_csv('submission.csv', index=False)                        
 
 if __name__ == '__main__':
     main()
