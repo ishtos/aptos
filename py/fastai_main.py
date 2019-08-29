@@ -119,7 +119,7 @@ def main():
     print("START OLD TRAIN")
 
     learn.fit_one_cycle(5, 0.0005)
-    learn.save(os.path.join('..', 'weights', 'stage-1-5'))
+    learn.save(os.path.join('stage-1-5'))
 
     print("END OLD TRAIN")
 
@@ -146,7 +146,7 @@ def main():
    
     learn.unfreeze()
     learn.fit_one_cycle(15, 0.0001)
-    learn.save(os.path.join('..', 'weights', 'stage-2-15'))
+    learn.save(os.path.join('stage-2-15'))
 
     print("END TRAIN")
 
