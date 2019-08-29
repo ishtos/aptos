@@ -98,11 +98,10 @@ def main():
         .normalize(imagenet_stats)
        )
 
-    learn = Learner(data, 
-                model,   
-                path='../',
-                model_dir='weights',
-                metrics=[qk]).to_fp16()
+    learn = Learner(
+        data, 
+        model,   
+        metrics=[qk]).to_fp16()
 
     print("START TRAIN")
    
