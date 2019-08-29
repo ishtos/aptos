@@ -54,7 +54,7 @@ def get_df():
     df = df.drop(columns=['id_code'])
     df = df.sample(frac=1).reset_index(drop=True) 
     test_df = pd.read_csv(os.path.join(base_image_dir, 'sample_submission.csv'))
-    return df[0:64], test_df
+    return df[0:256], test_df
 
 
 def get_old_df():
@@ -66,7 +66,7 @@ def get_old_df():
     df = df.sample(frac=1).reset_index(drop=True) 
     df = df.rename(columns={'level': 'diagnosis'})
     # df.drop(['Unnamed: 0', 'Unnamed: 0.1'], inplace=True, axis=1)
-    return df[0:64]
+    return df[0:256]
 
 
 def qk(y_pred, y):
@@ -128,7 +128,7 @@ def main():
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
         .databunch(bs=bs, num_workers=0) 
-        .normalize(imagenet_stats)  
+        .normalize(imagenet_stats)
        )
 
     learn = Learner(data, 
