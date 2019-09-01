@@ -10,6 +10,7 @@ import json
 import math
 import re
 import hashlib
+import psutil
 
 import pandas as pd
 import numpy as np
@@ -22,6 +23,8 @@ from PIL import Image
 from multiprocessing import cpu_count
 from tqdm import tqdm_notebook as tqdm
 from multiprocessing import Pool
+from statistics import median
+from joblib import Parallel, delayed
 
 import torch
 import torch.nn as nn
@@ -43,7 +46,34 @@ from sklearn.metrics import cohen_kappa_score
 import albumentations as A
 from albumentations import torch as AT
 
+
 from efficientnet_pytorch import EfficientNet
+
+def getImageMetaData(strFile):
+    file = None;
+    bRet = False;
+    strMd5 = "";
+    
+    try:
+        file = open(strFile, "rb");
+        md5 = hashlib.md5();
+        strRead = "";
+        
+        while True:
+            strRead = file.read(8096);
+            if not strRead:
+                break;
+            md5.update(strRead);
+        #read file finish
+        bRet = True;
+        strMd5 = md5.hexdigest();
+    except:
+        bRet = False;
+    finally:
+        if file:
+            file.close()
+
+    return strMd5
 
 
 def get_df():
@@ -51,7 +81,11 @@ def get_df():
     train_dir = os.path.join(base_image_dir, 'train_images')
     df = pd.read_csv(os.path.join(base_image_dir, 'train.csv'))
     df['path'] = df['id_code'].map(lambda x: os.path.join(train_dir,'{}.png'.format(x)))
-    df = df.drop(columns=['id_code'])
+    img_meta_l = Parallel(n_jobs=psutil.cpu_count(), verbose=1)((delayed(getImageMetaData)(fp) for fp in df['path']))
+    df['strMd5'] = img_meta_l
+    df['strMd5_count'] = df.groupby('strMd5')['id_code'].transform('count')
+    df = df.drop_duplicates(subset=['diagnosis', 'strMd5'])
+    df = df.drop(columns=['id_code', 'strMd5', 'strMd5_count'], axis=1)
     df = df.sample(frac=1).reset_index(drop=True) 
     test_df = pd.read_csv(os.path.join(base_image_dir, 'sample_submission.csv'))
     return df, test_df
