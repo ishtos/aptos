@@ -76,13 +76,58 @@ def getImageMetaData(strFile):
     return strMd5
 
 
+def crop_image_from_gray(image, tol=8):
+    if image.ndim == 2:
+        mask = image>told
+        return image[np.ix_(mask.any(1),mask.any(0))]
+    elif image.ndim== 3:
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        mask = gray_image>tol        
+        check_shape = image[:,:,0][np.ix_(mask.any(1),mask.any(0))].shape[0]
+        if (check_shape == 0):
+            return image
+        else:
+            image1=image[:,:,0][np.ix_(mask.any(1),mask.any(0))]
+            image2=image[:,:,1][np.ix_(mask.any(1),mask.any(0))]
+            image3=image[:,:,2][np.ix_(mask.any(1),mask.any(0))]
+            image = np.stack([image1,image2,image3],axis=-1)
+        return image
+
+def _load_format(path, convert_mode, after_open)->Image:
+    image_size = 300
+    image = cv2.imread(path)
+    image = crop_image_from_gray(image)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    height, width, depth = image.shape
+    rate = height / width
+    height = int(image_size * rate)
+    width = image_size
+    image = cv2.resize(image, (height, width))
+    image = cv2.addWeighted (image, 4, cv2.GaussianBlur(image , (0,0) , 30) , -4, 128) 
+    
+    largest_side = np.max((height, width))
+    image = cv2.resize(image, (image_size, largest_side))
+
+    height, width, depth = image.shape
+
+    x = width // 2
+    y = height // 2
+    r = np.amin((x, y))
+
+    circle_image = np.zeros((height, width), np.uint8)
+    cv2.circle(circle_image, (x, y), int(r), 1, thickness=-1)
+    image = cv2.bitwise_and(image, image, mask=circle_image)
+    image = crop_image_from_gray(image)
+
+    return Image(pil2tensor(image, np.float32).div_(255))
+
 def get_df():
     base_image_dir = os.path.join('..', 'input', 'aptos2019-blindness-detection')
     train_dir = os.path.join(base_image_dir, 'train_images')
     df = pd.read_csv(os.path.join(base_image_dir, 'train.csv'))
     df['path'] = df['id_code'].map(lambda x: os.path.join(train_dir,'{}.png'.format(x)))
-    img_meta_l = Parallel(n_jobs=psutil.cpu_count(), verbose=1)((delayed(getImageMetaData)(fp) for fp in df['path']))
-    df['strMd5'] = img_meta_l
+    image_meta_l = Parallel(n_jobs=psutil.cpu_count(), verbose=1)((delayed(getImageMetaData)(fp) for fp in df['path']))
+    df['strMd5'] = image_meta_l
     df['strMd5_count'] = df.groupby('strMd5')['id_code'].transform('count')
     df = df.drop_duplicates(subset=['diagnosis', 'strMd5'])
     df = df.drop(columns=['id_code', 'strMd5', 'strMd5_count'], axis=1)
@@ -118,6 +163,7 @@ def seed_everything():
 
 
 def main():
+    vision.data.open_image = _load_format
     seed_everything()
 
     df, test_df = get_df()
@@ -133,8 +179,16 @@ def main():
     bs = 32
     size = 300
 
-    xtra_tfms=contrast(scale=1.21)
-    tfms = get_transforms(do_flip=True, flip_vert=True, max_rotate=360, max_zoom=1.3)
+    tfms = ([
+        RandTransform(tfm=TfmCrop (crop_pad), kwargs={'row_pct': (0, 1), 'col_pct': (0, 1), 'padding_mode': 'reflection'}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmAffine (dihedral_affine), kwargs={}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmAffine (zoom), kwargs={'scale': (1.1, 1.5), 'row_pct': (0, 1), 'col_pct': (0, 1)}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmLighting (brightness), kwargs={'change': (0.4, 0.6)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmLighting (contrast), kwargs={'scale': (0.8, 1.25)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
+    ],
+    [
+        RandTransform(tfm=TfmCrop (crop_pad), kwargs={}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True)
+    ])
 
     old_data = (ImageList.from_df(df=old_df, path='./', cols='path')
         .split_none()
