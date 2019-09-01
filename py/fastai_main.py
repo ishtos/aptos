@@ -91,7 +91,7 @@ def main():
 
     print("START LAOD")
     
-    model = EfficientNet.from_pretrained('efficientnet-b3')
+    model = EfficientNet.from_pretrained('efficientnet-b0')
     model._fc = nn.Linear(in_features=model._fc.in_features, out_features=1, bias=True)
 
     print("END LOAD")
@@ -119,7 +119,7 @@ def main():
     print("START OLD TRAIN")
 
     learn.fit_one_cycle(5, 0.0005)
-    learn.save(os.path.join('stage-1-5'))
+    learn.save(os.path.join('stage-1-epoch-5-model-0'))
 
     print("END OLD TRAIN")
 
@@ -146,7 +146,7 @@ def main():
    
     learn.unfreeze()
     learn.fit_one_cycle(15, 0.0001)
-    learn.save(os.path.join('stage-2-15'))
+    learn.save(os.path.join('stage-2-epoch-15-model-0'))
 
     print("END TRAIN")
 
