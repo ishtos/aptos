@@ -106,6 +106,9 @@ venv.bak/
 # input
 input/
 
+# output
+output/
+
 # weights
 weights/
 old_weights/
