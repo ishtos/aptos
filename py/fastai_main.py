@@ -144,7 +144,6 @@ def get_old_df():
     df = df.drop(columns=['image'])
     df = df.sample(frac=1).reset_index(drop=True) 
     df = df.rename(columns={'level': 'diagnosis'})
-    # df.drop(['Unnamed: 0', 'Unnamed: 0.1'], inplace=True, axis=1)
     return df
 
 
@@ -171,7 +170,7 @@ def main():
 
     print("START LAOD")
     
-    model = EfficientNet.from_pretrained('efficientnet-b0')
+    model = EfficientNet.from_pretrained('efficientnet-b3')
     model._fc = nn.Linear(in_features=model._fc.in_features, out_features=1, bias=True)
 
     print("END LOAD")
@@ -182,6 +181,8 @@ def main():
     tfms = ([
         RandTransform(tfm=TfmCrop (crop_pad), kwargs={'row_pct': (0, 1), 'col_pct': (0, 1), 'padding_mode': 'reflection'}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
         RandTransform(tfm=TfmAffine (dihedral_affine), kwargs={}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmCoord (symmetric_warp), kwargs={'magnitude': (-0.1, 0.1)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
+          RandTransform(tfm=TfmAffine (rotate), kwargs={'degrees': (-90.0, 90.0)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
         RandTransform(tfm=TfmAffine (zoom), kwargs={'scale': (1.1, 1.5), 'row_pct': (0, 1), 'col_pct': (0, 1)}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
         RandTransform(tfm=TfmLighting (brightness), kwargs={'change': (0.4, 0.6)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
         RandTransform(tfm=TfmLighting (contrast), kwargs={'scale': (0.8, 1.25)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
@@ -207,7 +208,7 @@ def main():
     print("START OLD TRAIN")
 
     learn.fit_one_cycle(5, 0.0005)
-    learn.save(os.path.join('stage-1-epoch-5-model-0'))
+    learn.save(os.path.join('stage-1-epoch-5-model-3'))
 
     print("END OLD TRAIN")
 
@@ -234,7 +235,7 @@ def main():
    
     learn.unfreeze()
     learn.fit_one_cycle(15, 0.0001)
-    learn.save(os.path.join('stage-2-epoch-15-model-0'))
+    learn.save(os.path.join('stage-2-epoch-15-model-3'))
 
     print("END TRAIN")
 
