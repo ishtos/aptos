@@ -1,112 +1,0 @@
-[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
-[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.6s
-[Parallel(n_jobs=24)]: Done 187 tasks      | elapsed:    1.0s
-[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    2.3s finished
-START LAOD
-Loaded pretrained weights for efficientnet-b3
-END LOAD
-START OLD TRAIN
-epoch     train_loss  valid_loss  qk        time    
-0         0.552016    #na#        4:18:21   
-1         0.483859    #na#        4:18:38   
-2         0.426761    #na#        4:18:26   
-3         0.368253    #na#        4:18:40   
-4         0.325859    #na#        4:18:39   
-Total time: 21:32:47
-END OLD TRAIN
-START TRAIN
-epoch     train_loss  valid_loss  qk        time    
-0         0.509616    0.358220    0.869589  27:59     
-1         0.432203    0.342639    0.864249  27:56     
-2         0.373162    0.353795    0.855716  28:00     
-3         0.324454    0.331409    0.868831  28:02     
-4         0.295882    0.302829    0.880295  28:02     
-5         0.280909    0.286531    0.894563  28:03     
-6         0.267428    0.281932    0.894134  28:03     
-7         0.251131    0.284514    0.894002  27:59     
-8         0.247129    0.282259    0.899009  27:55     
-9         0.231849    0.289900    0.892487  28:00     
-10        0.221904    0.285636    0.890758  28:00     
-11        0.220014    0.278965    0.897231  28:04     
-12        0.217497    0.279590    0.898390  27:57     
-13        0.209810    0.281934    0.894123  28:03     
-14        0.226565    0.281122    0.897195  28:00     
-Total time: 7:00:08
-END TRAIN
-[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
-[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.6s
-[Parallel(n_jobs=24)]: Done 195 tasks      | elapsed:    1.0s
-[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    2.3s finished
-Downloading: "http://storage.googleapis.com/public-models/efficientnet/efficientnet-b5-b6417697.pth" to /root/.cache/torch/checkpoints/efficientnet-b5-b6417697.pth
-  0%|          | 0.00/117M [00:00<?, ?B/s]  4%|▍         | 4.50M/117M [00:00<00:02, 47.2MB/s] 12%|█▏        | 13.5M/117M [00:00<00:01, 55.5MB/s] 21%|██        | 24.0M/117M [00:00<00:01, 65.1MB/s] 30%|███       | 35.2M/117M [00:00<00:01, 75.1MB/s] 39%|███▉      | 45.6M/117M [00:00<00:00, 82.9MB/s] 48%|████▊     | 56.1M/117M [00:00<00:00, 89.6MB/s] 57%|█████▋    | 67.1M/117M [00:00<00:00, 94.8MB/s] 67%|██████▋   | 78.2M/117M [00:00<00:00, 100MB/s]  75%|███████▌  | 88.1M/117M [00:00<00:00, 98.7MB/s] 85%|████████▌ | 99.5M/117M [00:01<00:00, 104MB/s]  95%|█████████▍| 111M/117M [00:01<00:00, 108MB/s] 100%|██████████| 117M/117M [00:01<00:00, 104MB/s]
-START LAOD
-Loaded pretrained weights for efficientnet-b5
-END LOAD
-START OLD TRAIN
-epoch     train_loss  valid_loss  qk        time    
-Traceback (most recent call last):
-  File "fastai_main.py", line 242, in <module>
-    main()
-  File "fastai_main.py", line 208, in main
-    learn.fit_one_cycle(5, 0.0005)
-  File "/opt/conda/lib/python3.6/site-packages/fastai/train.py", line 22, in fit_one_cycle
-    learn.fit(cyc_len, max_lr, wd=wd, callbacks=callbacks)
-  File "/opt/conda/lib/python3.6/site-packages/fastai/basic_train.py", line 202, in fit
-    fit(epochs, self, metrics=self.metrics, callbacks=self.callbacks+callbacks)
-  File "/opt/conda/lib/python3.6/site-packages/fastai/basic_train.py", line 101, in fit
-    loss = loss_batch(learn.model, xb, yb, learn.loss_func, learn.opt, cb_handler)
-  File "/opt/conda/lib/python3.6/site-packages/fastai/basic_train.py", line 26, in loss_batch
-    out = model(*xb)
-  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 547, in __call__
-    result = self.forward(*input, **kwargs)
-  File "/opt/conda/lib/python3.6/site-packages/efficientnet_pytorch/model.py", line 178, in forward
-    x = self.extract_features(inputs)
-  File "/opt/conda/lib/python3.6/site-packages/efficientnet_pytorch/model.py", line 167, in extract_features
-    x = block(x, drop_connect_rate=drop_connect_rate)
-  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 547, in __call__
-    result = self.forward(*input, **kwargs)
-  File "/opt/conda/lib/python3.6/site-packages/efficientnet_pytorch/model.py", line 76, in forward
-    x = relu_fn(self._bn1(self._depthwise_conv(x)))
-  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 547, in __call__
-    result = self.forward(*input, **kwargs)
-  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/batchnorm.py", line 81, in forward
-    exponential_average_factor, self.eps)
-  File "/opt/conda/lib/python3.6/site-packages/torch/nn/functional.py", line 1656, in batch_norm
-    training, momentum, eps, torch.backends.cudnn.enabled
-RuntimeError: CUDA out of memory. Tried to allocate 166.00 MiB (GPU 0; 10.92 GiB total capacity; 10.02 GiB already allocated; 1.50 MiB free; 289.97 MiB cached)
-[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
-[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.4s
-[Parallel(n_jobs=24)]: Done 181 tasks      | elapsed:    1.0s
-[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    2.3s finished
-START LAOD
-Loaded pretrained weights for efficientnet-b5
-END LOAD
-START OLD TRAIN
-epoch     train_loss  valid_loss  qk        time    
-Traceback (most recent call last):
-  File "fastai_main.py", line 242, in <module>
-    main()
-  File "fastai_main.py", line 208, in main
-    learn.fit_one_cycle(5, 0.0005)
-  File "/opt/conda/lib/python3.6/site-packages/fastai/train.py", line 22, in fit_one_cycle
-    learn.fit(cyc_len, max_lr, wd=wd, callbacks=callbacks)
-  File "/opt/conda/lib/python3.6/site-packages/fastai/basic_train.py", line 202, in fit
-    fit(epochs, self, metrics=self.metrics, callbacks=self.callbacks+callbacks)
-  File "/opt/conda/lib/python3.6/site-packages/fastai/basic_train.py", line 101, in fit
-    loss = loss_batch(learn.model, xb, yb, learn.loss_func, learn.opt, cb_handler)
-  File "/opt/conda/lib/python3.6/site-packages/fastai/basic_train.py", line 26, in loss_batch
-    out = model(*xb)
-  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 547, in __call__
-    result = self.forward(*input, **kwargs)
-  File "/opt/conda/lib/python3.6/site-packages/efficientnet_pytorch/model.py", line 178, in forward
-    x = self.extract_features(inputs)
-  File "/opt/conda/lib/python3.6/site-packages/efficientnet_pytorch/model.py", line 167, in extract_features
-    x = block(x, drop_connect_rate=drop_connect_rate)
-  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 547, in __call__
-    result = self.forward(*input, **kwargs)
-  File "/opt/conda/lib/python3.6/site-packages/efficientnet_pytorch/model.py", line 75, in forward
-    x = relu_fn(self._bn0(self._expand_conv(inputs)))
-  File "/opt/conda/lib/python3.6/site-packages/efficientnet_pytorch/utils.py", line 41, in relu_fn
-    return x * torch.sigmoid(x)
-RuntimeError: CUDA out of memory. Tried to allocate 20.00 MiB (GPU 0; 10.92 GiB total capacity; 10.03 GiB already allocated; 3.50 MiB free; 283.42 MiB cached)
-[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.

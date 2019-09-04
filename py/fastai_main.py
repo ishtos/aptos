@@ -102,14 +102,13 @@ def _load_format(path, convert_mode, after_open)->Image:
     rate = height / width
     height = int(image_size * rate)
     width = image_size
-    image = cv2.resize(image, (height, width))
+    if height < 300:
+        width = width * (300 / height)
+        height = 300
+
+    image = cv2.resize(image, (width, height))
     image = cv2.addWeighted (image, 4, cv2.GaussianBlur(image , (0,0) , 30) , -4, 128) 
     
-    largest_side = np.max((height, width))
-    image = cv2.resize(image, (image_size, largest_side))
-
-    height, width, depth = image.shape
-
     x = width // 2
     y = height // 2
     r = np.amin((x, y))
