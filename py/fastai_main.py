@@ -137,7 +137,7 @@ def get_df():
 def get_old_df():
     base_image_dir = os.path.join('..', 'input', 'diabetic-retinopathy-resized-png')
     train_dir = os.path.join(base_image_dir, 'resized_train_cropped', 'resized_train_cropped')
-    df = pd.read_csv(os.path.join('..', 'input', 'preprocessed.csv'))
+    df = pd.read_csv(os.path.join('..', 'py', 'preprocessed.csv'))
     df['path'] = df['image'].map(lambda x: os.path.join(train_dir,'{}.png'.format(x)))
     df = df.drop(columns=['image'])
     df = df.sample(frac=1).reset_index(drop=True) 
