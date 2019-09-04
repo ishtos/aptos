@@ -75,7 +75,6 @@ def getImageMetaData(strFile):
 
     return strMd5
 
-
 def crop_image_from_gray(image, tol=8):
     if image.ndim == 2:
         mask = image>told
@@ -138,12 +137,19 @@ def get_df():
 def get_old_df():
     base_image_dir = os.path.join('..', 'input', 'diabetic-retinopathy-resized-png')
     train_dir = os.path.join(base_image_dir, 'resized_train_cropped', 'resized_train_cropped')
-    df = pd.read_csv(os.path.join(base_image_dir, 'trainLabels_cropped.csv'))
+    df = pd.read_csv(os.path.join('..', 'input', 'preprocessed.csv'))
     df['path'] = df['image'].map(lambda x: os.path.join(train_dir,'{}.png'.format(x)))
     df = df.drop(columns=['image'])
     df = df.sample(frac=1).reset_index(drop=True) 
     df = df.rename(columns={'level': 'diagnosis'})
-    return df
+    idx_s = df.shape[0]
+
+    train_df, _ = get_df()
+    df = pd.concat([df, train_df], axis=0).reset_index()
+
+    idx_e = df.shape[0]
+
+    return df, idx_s, idx_e
 
 
 def qk(y_pred, y):
@@ -165,7 +171,7 @@ def main():
     seed_everything()
 
     df, test_df = get_df()
-    old_df = get_old_df()
+    old_df, idx_s, idx_e = get_old_df()
 
     print("START LAOD")
     
@@ -178,12 +184,11 @@ def main():
     size = 300
 
     tfms = ([
-        RandTransform(tfm=TfmCrop (crop_pad), kwargs={'row_pct': (0, 1), 'col_pct': (0, 1), 'padding_mode': 'reflection'}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
         RandTransform(tfm=TfmAffine (dihedral_affine), kwargs={}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
-        RandTransform(tfm=TfmCoord (symmetric_warp), kwargs={'magnitude': (-0.1, 0.1)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
-          RandTransform(tfm=TfmAffine (rotate), kwargs={'degrees': (-90.0, 90.0)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
-        RandTransform(tfm=TfmAffine (zoom), kwargs={'scale': (1.1, 1.5), 'row_pct': (0, 1), 'col_pct': (0, 1)}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
-        RandTransform(tfm=TfmLighting (brightness), kwargs={'change': (0.4, 0.6)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmAffine (zoom), kwargs={'scale': (1.0, 1.3)}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmCrop (crop_pad), kwargs={'row_pct': (0, 1), 'col_pct': (0, 1), 'padding_mode': 'reflection'}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmCoord (symmetric_warp), kwargs={'magnitude': (-0.1, 0.1)}, p=0.25, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmAffine (rotate), kwargs={'degrees': (-90.0, 90.0)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
         RandTransform(tfm=TfmLighting (contrast), kwargs={'scale': (0.8, 1.25)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
     ],
     [
@@ -191,7 +196,7 @@ def main():
     ])
 
     old_data = (ImageList.from_df(df=old_df, path='./', cols='path')
-        .split_none()
+        .split_by_idx(list(range(idx_s, idx_e))) 
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
         .databunch(bs=bs, num_workers=0) 
@@ -233,8 +238,12 @@ def main():
     print("START TRAIN")
    
     learn.unfreeze()
-    learn.fit_one_cycle(15, 0.0001)
+    learn.fit_one_cycle(15, 0.0005)
     learn.save(os.path.join('stage-2-epoch-15-model-3'))
+
+    for i in range(0, 10):
+        learn.fit_one_cycle(1, 0.0001)
+        learn.save(os.path.join(f'stage-3-epoch-{i}-model-3'))
 
     print("END TRAIN")
 
