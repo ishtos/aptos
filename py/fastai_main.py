@@ -106,7 +106,11 @@ def _load_format(path, convert_mode, after_open)->Image:
         height = 300
 
     image = cv2.resize(image, (width, height))
-    image = cv2.addWeighted (image, 4, cv2.GaussianBlur(image , (0,0) , 30) , -4, 128) 
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    image[:, :, 0] = clahe.apply(image[:, :, 0]) 
+    image[:, :, 1] = clahe.apply(image[:, :, 1]) 
+    image[:, :, 2] = clahe.apply(image[:, :, 2]) 
+    image = cv2.addWeighted(image, 4, cv2.GaussianBlur(image , (0,0) , 30) , -4, 128) 
     
     x = width // 2
     y = height // 2
@@ -131,13 +135,15 @@ def get_df():
     df = df.drop(columns=['id_code', 'strMd5', 'strMd5_count'], axis=1)
     df = df.sample(frac=1).reset_index(drop=True) 
     test_df = pd.read_csv(os.path.join(base_image_dir, 'sample_submission.csv'))
-    return df, test_df
 
+    _, valid, _, _ = train_test_split(df, df['diagnosis'], test_size=0.2, random_state=43)
+    
+    return df, test_df, valid.index
 
 def get_old_df():
     base_image_dir = os.path.join('..', 'input', 'diabetic-retinopathy-resized-png')
     train_dir = os.path.join(base_image_dir, 'resized_train_cropped', 'resized_train_cropped')
-    df = pd.read_csv(os.path.join('..', 'py', 'preprocessed.csv'))
+    df = pd.read_csv(os.path.join('..', 'py', 'resample_previous.csv'))
     df['path'] = df['image'].map(lambda x: os.path.join(train_dir,'{}.png'.format(x)))
     df = df.drop(columns=['image'])
     df = df.sample(frac=1).reset_index(drop=True) 
@@ -170,7 +176,7 @@ def main():
     vision.data.open_image = _load_format
     seed_everything()
 
-    df, test_df = get_df()
+    df, test_df, valid_idx = get_df()
     old_df, idx_s, idx_e = get_old_df()
 
     print("START LAOD")
@@ -186,13 +192,11 @@ def main():
     tfms = ([
         RandTransform(tfm=TfmAffine (dihedral_affine), kwargs={}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
         RandTransform(tfm=TfmAffine (zoom), kwargs={'scale': (1.0, 1.3)}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
-        RandTransform(tfm=TfmCrop (crop_pad), kwargs={'row_pct': (0, 1), 'col_pct': (0, 1), 'padding_mode': 'reflection'}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
-        RandTransform(tfm=TfmCoord (symmetric_warp), kwargs={'magnitude': (-0.1, 0.1)}, p=0.25, resolved={}, do_run=True, is_random=True, use_on_y=True),
-        RandTransform(tfm=TfmAffine (rotate), kwargs={'degrees': (-90.0, 90.0)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
-        RandTransform(tfm=TfmLighting (contrast), kwargs={'scale': (0.8, 1.25)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmAffine (rotate), kwargs={'degrees': (-180.0, 180.0)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
+        RandTransform(tfm=TfmLighting (contrast), kwargs={'scale': (0.7, 1.45)}, p=0.75, resolved={}, do_run=True, is_random=True, use_on_y=True),
     ],
     [
-        RandTransform(tfm=TfmCrop (crop_pad), kwargs={}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True)
+        RandTransform(tfm=TfmAffine (zoom), kwargs={'scale': (1.0, 1.3)}, p=1.0, resolved={}, do_run=True, is_random=True, use_on_y=True),
     ])
 
     old_data = (ImageList.from_df(df=old_df, path='./', cols='path')
@@ -211,13 +215,14 @@ def main():
 
     print("START OLD TRAIN")
 
+    learn.freeze_to(20)
     learn.fit_one_cycle(5, 0.0005)
     learn.save(os.path.join('stage-1-epoch-5-model-3'))
 
     print("END OLD TRAIN")
 
     data = (ImageList.from_df(df=df, path='./', cols='path') 
-        .split_by_rand_pct(0.2) 
+        .split_by_idx(valid_idx)
         .label_from_df(cols='diagnosis', label_cls=FloatList)
         .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
         .databunch(bs=bs, num_workers=0) 
@@ -238,7 +243,7 @@ def main():
     print("START TRAIN")
    
     learn.unfreeze()
-    learn.fit_one_cycle(15, 0.0005)
+    learn.fit_one_cycle(10, 0.0005)
     learn.save(os.path.join('stage-2-epoch-15-model-3'))
 
     for i in range(0, 10):
