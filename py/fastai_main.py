@@ -110,7 +110,6 @@ def _load_format(path, convert_mode, after_open)->Image:
     image[:, :, 0] = clahe.apply(image[:, :, 0]) 
     image[:, :, 1] = clahe.apply(image[:, :, 1]) 
     image[:, :, 2] = clahe.apply(image[:, :, 2]) 
-    image = cv2.addWeighted(image, 4, cv2.GaussianBlur(image , (0,0) , 30) , -4, 128) 
     
     x = width // 2
     y = height // 2
@@ -120,6 +119,7 @@ def _load_format(path, convert_mode, after_open)->Image:
     cv2.circle(circle_image, (x, y), int(r), 1, thickness=-1)
     image = cv2.bitwise_and(image, image, mask=circle_image)
     image = crop_image_from_gray(image)
+    image = cv2.addWeighted(image, 4, cv2.GaussianBlur(image , (0,0) , 30) , -4, 128) 
 
     return Image(pil2tensor(image, np.float32).div_(255))
 
@@ -150,7 +150,7 @@ def get_old_df():
     df = df.rename(columns={'level': 'diagnosis'})
     idx_s = df.shape[0]
 
-    train_df, _ = get_df()
+    train_df, _, _ = get_df()
     df = pd.concat([df, train_df], axis=0).reset_index()
 
     idx_e = df.shape[0]
