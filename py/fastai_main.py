@@ -102,7 +102,7 @@ def _load_format(path, convert_mode, after_open)->Image:
     height = int(image_size * rate)
     width = image_size
     if height < 300:
-        width = width * (300 / height)
+        width = int(width * (300 / height))
         height = 300
 
     image = cv2.resize(image, (width, height))
