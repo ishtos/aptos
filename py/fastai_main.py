@@ -213,11 +213,12 @@ def main():
                 model_dir='weights',
                 metrics=[qk]).to_fp16()
 
+    learn.load(os.path.join('..', 'weights', 'stage-1-epoch-5-model-3'))
+
     print("START OLD TRAIN")
 
-    learn.freeze_to(20)
-    learn.fit_one_cycle(5, 0.0005)
-    learn.save(os.path.join('stage-1-epoch-5-model-3'))
+    learn.fit_one_cycle(1, 0.0005)
+    learn.save(os.path.join('stage-1-unfreeze-epoch-1-model-3'))
 
     print("END OLD TRAIN")
 
@@ -230,10 +231,10 @@ def main():
        )
 
     learn = Learner(data, 
-                model,   
-                path='../',
-                model_dir='weights',
-                metrics=[qk]).to_fp16()
+                    model,   
+                    path='../',
+                    model_dir='weights',
+                    metrics=[qk]).to_fp16()
 
     learn.data.add_test(ImageList.from_df(test_df,
                                       os.path.join('..', 'input', 'aptos2019-blindness-detection'),
@@ -241,14 +242,28 @@ def main():
                                       suffix='.png'))
 
     print("START TRAIN")
-   
-    learn.unfreeze()
-    learn.fit_one_cycle(10, 0.0005)
-    learn.save(os.path.join('stage-2-epoch-15-model-3'))
 
-    for i in range(0, 10):
-        learn.fit_one_cycle(1, 0.0001)
-        learn.save(os.path.join(f'stage-3-epoch-{i}-model-3'))
+    skf = StratifiedKFold(n_splits=5)
+    for i, (_, valid_idx) in enumerate(skf.split(df, df['diagnosis'].values)):
+        data = (ImageList.from_df(df=df, path='./', cols='path') 
+                .split_by_idx(valid_idx) 
+                .label_from_df(cols='diagnosis', label_cls=FloatList)
+                .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
+                .databunch(bs=bs, num_workers=0) 
+                .normalize(imagenet_stats)  
+            )
+        
+        learn = Learner(data, 
+                        model,   
+                        model_dir='.',
+                        metrics=[qk]).to_fp16()
+                
+        learn.load(config['weight_path'])
+        
+        learn.unfreeze()
+        for j in range(6): 
+            learn.fit_one_cycle(1, 0.0005)
+            learn.save(f'cv-{i}-stage-2-epoch-{j}-model-3')
 
     print("END TRAIN")
 
