@@ -222,26 +222,25 @@ def main():
 
     # print("END OLD TRAIN")
 
-    data = (ImageList.from_df(df=df, path='./', cols='path') 
-        .split_by_idx(valid_idx)
-        .label_from_df(cols='diagnosis', label_cls=FloatList)
-        .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
-        .databunch(bs=bs, num_workers=0) 
-        .normalize(imagenet_stats)  
-       )
+    # data = (ImageList.from_df(df=df, path='./', cols='path') 
+    #     .split_by_idx(valid_idx)
+    #     .label_from_df(cols='diagnosis', label_cls=FloatList)
+    #     .transform(tfms=tfms, size=size, resize_method=ResizeMethod.SQUISH, padding_mode='zeros') 
+    #     .databunch(bs=bs, num_workers=0) 
+    #     .normalize(imagenet_stats)  
+    #    )
 
-    learn = Learner(data, 
-                    model,   
-                    path='../',
-                    model_dir='weights',
-                    metrics=[qk]).to_fp16()
+    # learn = Learner(data, 
+    #                 model,   
+    #                 path='../',
+    #                 model_dir='weights',
+    #                 metrics=[qk]).to_fp16()
 
-    learn.data.add_test(ImageList.from_df(test_df,
-                                      os.path.join('..', 'input', 'aptos2019-blindness-detection'),
-                                      folder='test_images',
-                                      suffix='.png'))
+    # learn.data.add_test(ImageList.from_df(test_df,
+    #                                   os.path.join('..', 'input', 'aptos2019-blindness-detection'),
+    #                                   folder='test_images',
+    #                                   suffix='.png'))
 
-    learn.load('stage-1-unfreeze-epoch-1-model-3'))
     print("START TRAIN")
 
     skf = StratifiedKFold(n_splits=5)
@@ -259,7 +258,7 @@ def main():
                         model_dir='.',
                         metrics=[qk]).to_fp16()
                 
-        learn.load(config['weight_path'])
+        learn.load('stage-1-unfreeze-epoch-1-model-3')
         
         learn.unfreeze()
         for j in range(6): 
