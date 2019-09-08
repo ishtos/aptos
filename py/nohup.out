@@ -1,0 +1,211 @@
+  File "fastai_main.py", line 244
+    learn.load('stage-1-unfreeze-epoch-1-model-3'))
+                                                  ^
+SyntaxError: invalid syntax
+[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
+[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.4s
+[Parallel(n_jobs=24)]: Done 196 tasks      | elapsed:    0.9s
+[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    2.1s finished
+[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
+[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    1.4s finished
+fastai_main.py:154: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  df = pd.concat([df, train_df], axis=0).reset_index()
+START LAOD
+Loaded pretrained weights for efficientnet-b3
+END LOAD
+START TRAIN
+Traceback (most recent call last):
+  File "fastai_main.py", line 273, in <module>
+    main()
+  File "fastai_main.py", line 262, in main
+    learn.load(config['weight_path'])
+NameError: name 'config' is not defined
+[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
+[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.6s
+[Parallel(n_jobs=24)]: Done 189 tasks      | elapsed:    1.0s
+[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    2.3s finished
+[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
+[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    1.2s finished
+fastai_main.py:154: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  df = pd.concat([df, train_df], axis=0).reset_index()
+START LAOD
+Loaded pretrained weights for efficientnet-b3
+END LOAD
+START TRAIN
+Traceback (most recent call last):
+  File "fastai_main.py", line 272, in <module>
+    main()
+  File "fastai_main.py", line 261, in main
+    learn.load('stage-1-unfreeze-epoch-1-model-3')
+  File "/opt/conda/lib/python3.6/site-packages/fastai/basic_train.py", line 269, in load
+    state = torch.load(source, map_location=device)
+  File "/opt/conda/lib/python3.6/site-packages/torch/serialization.py", line 384, in load
+    f = f.open('rb')
+  File "/opt/conda/lib/python3.6/pathlib.py", line 1181, in open
+    opener=self._opener)
+  File "/opt/conda/lib/python3.6/pathlib.py", line 1035, in _opener
+    return self._accessor.open(self, flags, mode)
+  File "/opt/conda/lib/python3.6/pathlib.py", line 387, in wrapped
+    return strfunc(str(pathobj), *args)
+FileNotFoundError: [Errno 2] No such file or directory: 'stage-1-unfreeze-epoch-1-model-3.pth'
+[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
+[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.6s
+[Parallel(n_jobs=24)]: Done 195 tasks      | elapsed:    0.9s
+[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    2.1s finished
+[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
+[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    1.3s finished
+fastai_main.py:154: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  df = pd.concat([df, train_df], axis=0).reset_index()
+START LAOD
+Loaded pretrained weights for efficientnet-b3
+END LOAD
+START TRAIN
+Traceback (most recent call last):
+  File "fastai_main.py", line 272, in <module>
+    main()
+  File "fastai_main.py", line 261, in main
+    learn.load('stage-1-unfreeze-epoch-1-model-3')
+  File "/opt/conda/lib/python3.6/site-packages/fastai/basic_train.py", line 269, in load
+    state = torch.load(source, map_location=device)
+  File "/opt/conda/lib/python3.6/site-packages/torch/serialization.py", line 384, in load
+    f = f.open('rb')
+  File "/opt/conda/lib/python3.6/pathlib.py", line 1181, in open
+    opener=self._opener)
+  File "/opt/conda/lib/python3.6/pathlib.py", line 1035, in _opener
+    return self._accessor.open(self, flags, mode)
+  File "/opt/conda/lib/python3.6/pathlib.py", line 387, in wrapped
+    return strfunc(str(pathobj), *args)
+FileNotFoundError: [Errno 2] No such file or directory: 'stage-1-unfreeze-epoch-1-model-3.pth'
+[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
+[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.4s
+[Parallel(n_jobs=24)]: Done 182 tasks      | elapsed:    0.9s
+[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    2.4s finished
+[Parallel(n_jobs=24)]: Using backend LokyBackend with 24 concurrent workers.
+[Parallel(n_jobs=24)]: Done   2 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=24)]: Done 3662 out of 3662 | elapsed:    1.2s finished
+fastai_main.py:154: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  df = pd.concat([df, train_df], axis=0).reset_index()
+/opt/conda/lib/python3.6/site-packages/sklearn/metrics/classification.py:373: RuntimeWarning: invalid value encountered in true_divide
+  k = np.sum(w_mat * confusion) / np.sum(w_mat * expected)
+START LAOD
+Loaded pretrained weights for efficientnet-b3
+END LOAD
+START TRAIN
+epoch     train_loss  valid_loss  qk        time    
+0         0.453771    0.332212    0.875745  27:41     
+Total time: 27:41
+epoch     train_loss  valid_loss  qk        time    
+0         0.422239    0.366153    0.847508  27:45     
+Total time: 27:45
+epoch     train_loss  valid_loss  qk        time    
+0         0.378074    0.314715    0.882823  27:57     
+Total time: 27:57
+epoch     train_loss  valid_loss  qk        time    
+0         0.371743    0.303873    0.873995  27:47     
+Total time: 27:47
+epoch     train_loss  valid_loss  qk        time    
+0         0.335340    0.285736    0.889522  27:48     
+Total time: 27:48
+epoch     train_loss  valid_loss  qk        time    
+0         0.323836    0.297317    0.875195  27:46     
+Total time: 27:46
+epoch     train_loss  valid_loss  qk        time    
+0         0.460946    0.374746    0.817527  27:53     
+Total time: 27:53
+epoch     train_loss  valid_loss  qk        time    
+0         0.408797    0.346241    0.826754  27:51     
+Total time: 27:51
+epoch     train_loss  valid_loss  qk        time    
+0         0.362295    0.521249    0.796559  27:59     
+Total time: 27:59
+epoch     train_loss  valid_loss  qk        time    
+0         0.341361    0.319884    0.842228  27:51     
+Total time: 27:51
+epoch     train_loss  valid_loss  qk        time    
+0         0.318483    0.383838    0.833698  27:56     
+Total time: 27:56
+epoch     train_loss  valid_loss  qk        time    
+0         0.316545    0.352695    0.841940  27:48     
+Total time: 27:48
+epoch     train_loss  valid_loss  qk        time    
+0         0.455544    0.406413    0.823619  27:51     
+Total time: 27:51
+epoch     train_loss  valid_loss  qk        time    
+0         0.390048    0.446738    0.837959  27:44     
+Total time: 27:44
+epoch     train_loss  valid_loss  qk        time    
+0         0.367651    0.402422    0.822476  27:52     
+Total time: 27:52
+epoch     train_loss  valid_loss  qk        time    
+0         0.327979    0.356291    0.849239  27:49     
+Total time: 27:49
+epoch     train_loss  valid_loss  qk        time    
+0         0.326492    0.401718    0.845572  27:46     
+Total time: 27:46
+epoch     train_loss  valid_loss  qk        time    
+0         0.299910    0.351921    0.860895  27:48     
+Total time: 27:48
+epoch     train_loss  valid_loss  qk        time    
+0         0.456848    0.332209    nan       27:49     
+Total time: 27:49
+epoch     train_loss  valid_loss  qk        time    
+0         0.397297    0.370760    nan       27:49     
+Total time: 27:49
+epoch     train_loss  valid_loss  qk        time    
+0         0.362590    0.384126    nan       27:47     
+Total time: 27:47
+epoch     train_loss  valid_loss  qk        time    
+0         0.387756    0.365114    nan       27:48     
+Total time: 27:48
+epoch     train_loss  valid_loss  qk        time    
+0         0.328911    0.328517    nan       27:33     
+Total time: 27:33
+epoch     train_loss  valid_loss  qk        time    
+0         0.313018    0.357686    0.796182  27:47     
+Total time: 27:47
+epoch     train_loss  valid_loss  qk        time    
+0         0.474035    0.359665    0.880454  27:53     
+Total time: 27:53
+epoch     train_loss  valid_loss  qk        time    
+0         0.396665    0.330775    0.874377  27:41     
+Total time: 27:41
+epoch     train_loss  valid_loss  qk        time    
+0         0.380103    0.377343    0.854027  27:47     
+Total time: 27:47
+epoch     train_loss  valid_loss  qk        time    
+0         0.346923    0.313288    0.878312  27:48     
+Total time: 27:48
+epoch     train_loss  valid_loss  qk        time    
+0         0.315896    0.321057    0.887644  27:52     
+Total time: 27:52
+epoch     train_loss  valid_loss  qk        time    
+0         0.312544    0.293332    0.893908  27:49     
+Total time: 27:49
+END TRAIN

@@ -258,7 +258,7 @@ def main():
                         model_dir='.',
                         metrics=[qk]).to_fp16()
                 
-        learn.load('stage-1-unfreeze-epoch-1-model-3')
+        learn.load('../weights/stage-1-unfreeze-epoch-1-model-3')
         
         learn.unfreeze()
         for j in range(6): 
